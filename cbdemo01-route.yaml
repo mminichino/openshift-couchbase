@@ -1,0 +1,75 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: cbdemo01-ui
+  namespace: cbdemo
+  labels:
+    app: couchbase
+    couchbase_cluster: cbdemo01
+spec:
+  host: cbdemo01-ui.apps.oslab.unix.us.com
+  port:
+    targetPort: 18091
+  tls:
+    termination: passthrough
+    insecureEdgeTerminationPolicy: Redirect
+  to:
+    kind: Service
+    name: cbdemo01-0000
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: cbdemo01-0000
+  namespace: cbdemo
+  labels:
+    app: couchbase
+    couchbase_cluster: cbdemo01
+spec:
+  host: cbdemo01-0000.apps.oslab.unix.us.com
+  port:
+    targetPort: 18091
+  tls:
+    termination: passthrough
+    insecureEdgeTerminationPolicy: Redirect
+  to:
+    kind: Service
+    name: cbdemo01-0000
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: cbdemo01-0001
+  namespace: cbdemo
+  labels:
+    app: couchbase
+    couchbase_cluster: cbdemo01
+spec:
+  host: cbdemo01-0001.apps.oslab.unix.us.com
+  port:
+    targetPort: 18091
+  tls:
+    termination: passthrough
+    insecureEdgeTerminationPolicy: Redirect
+  to:
+    kind: Service
+    name: cbdemo01-0001
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: cbdemo01-0002
+  namespace: cbdemo
+  labels:
+    app: couchbase
+    couchbase_cluster: cbdemo01
+spec:
+  host: cbdemo01-0002.apps.oslab.unix.us.com
+  port:
+    targetPort: 18091
+  tls:
+    termination: passthrough
+    insecureEdgeTerminationPolicy: Redirect
+  to:
+    kind: Service
+    name: cbdemo01-0002

@@ -1,0 +1,98 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: cb-default-admin
+type: Opaque
+data:
+  username: QWRtaW5pc3RyYXRvcg==
+  password: cGFzc3dvcmQ=
+---
+apiVersion: couchbase.com/v2
+kind: CouchbaseBucket
+metadata:
+  name: testdata
+---
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: cbdemo01-cert
+spec:
+  secretName: cbdemo01-tls 
+  duration: 6h 
+  renewBefore: 1h 
+  commonName: couchbase-server
+  isCA: false
+  privateKey:
+    algorithm: RSA
+    encoding: PKCS8 
+    size: 2048
+  usages:
+    - server auth 
+  dnsNames: 
+    - "*.cbdemo01"
+    - "*.cbdemo01.cbdemo"
+    - "*.cbdemo01.cbdemo.svc"
+    - "*.cbdemo01.cbdemo.svc.cluster.local"
+    - "*.cbdemo.svc.cluster.local"
+    - "*.cbdemo01.oslab.unix.us.com"
+    - "cbdemo01.cbdemo01.oslab.unix.us.com"
+    - "cbdemo01.oslab.unix.us.com"
+    - "cbdemo01-srv"
+    - "cbdemo01-srv.cbdemo"
+    - "cbdemo01-srv.cbdemo.svc"
+    - "*.cbdemo01-srv.cbdemo.svc.cluster.local"
+    - localhost
+  issuerRef:
+    name: ca-issuer
+    group: cert-manager.io
+    kind: Issuer
+---
+apiVersion: couchbase.com/v2
+kind: CouchbaseCluster
+metadata:
+  name: cbdemo01
+spec:
+  image: registry.connect.redhat.com/couchbase/server:7.0.1-1
+  security:
+    adminSecret: cb-default-admin
+  buckets:
+    managed: true
+  networking:
+    exposeAdminConsole: true 
+    adminConsoleServiceTemplate:
+      spec:
+        type: LoadBalancer 
+    exposedFeatures: 
+    - client
+    - xdcr
+    exposedFeatureServiceTemplate:
+      spec:
+        type: LoadBalancer 
+    dns:
+      domain: cbdemo01.oslab.unix.us.com
+    tls:
+      secretSource:
+        serverSecretName: cbdemo01-tls
+  servers:
+  - size: 3
+    name: data
+    services:
+    - data
+    volumeMounts:
+      default: cbdata
+  - size: 2
+    name: query_index
+    services:
+    - index
+    - query
+    - search
+    volumeMounts:
+      default: cbdata
+  volumeClaimTemplates: 
+  - metadata:
+      name: cbdata 
+    spec:
+      storageClassName: trident-ontap-nas 
+      resources: 
+        requests:
+          storage: 25Gi

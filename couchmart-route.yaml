@@ -1,0 +1,14 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: couchmart
+  namespace: cbdemo
+  labels:
+    app: couchmart
+spec:
+  host: couchmart.apps.oslab.unix.us.com
+  port:
+    targetPort: 8888
+  to:
+    kind: Service
+    name: couchmart-http

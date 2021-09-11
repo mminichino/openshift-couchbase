@@ -1,0 +1,22 @@
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: couchbase-operator-admission
+spec:
+  secretName: couchbase-operator-admission 
+  duration: 4320h 
+  renewBefore: 24h 
+  commonName: couchbase-operator-admission
+  isCA: false
+  privateKey:
+    algorithm: RSA
+    encoding: PKCS8
+    size: 2048
+  usages:
+  - server auth 
+  dnsNames:
+  - couchbase-operator-admission.cbdemo.svc
+  issuerRef:
+    group: cert-manager.io
+    kind: Issuer
+    name: ca-issuer

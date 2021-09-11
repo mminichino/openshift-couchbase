@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: couchmart
+  namespace: cbdemo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: couchmart
+  template:
+    metadata:
+      labels:
+        app: couchmart
+    spec:
+      serviceAccountName: runasroot
+      containers:
+      - name: couchmart
+        image: cbck/couchmart:latest
+        imagePullPolicy: Always
+        ports:
+        - name: couchmart-http
+          containerPort: 8888
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: couchmart-http
+  namespace: cbdemo
+  labels:
+    app: couchmart
+spec:
+  selector:
+    app: couchmart
+  ports:
+  - name: http
+    port: 8888
+    targetPort: 8888
